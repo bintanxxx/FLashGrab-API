@@ -1,0 +1,14 @@
+openapi: 3.0.0
+info:
+  title: FlashGrab API
+  description: API System for High Concurrency Flash Sale
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000
+paths:
+  /:
+    get:
+      summary: Health Check
+      responses:
+        "200":
+          description: Server is running

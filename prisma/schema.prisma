@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prism-jsa"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  name String
+  claims Claim[]
+  created_at DateTime @default(now())
+
+  @@map("users")
+}
+
+
+model Voucher {
+  id Int @id @default(autoincrement())
+  code String @unique
+  name String
+  stock Int @default(0)
+  
+  valid_from DateTime
+  valid_until DateTime
+  claims Claim[]
+
+  created_at DateTime @default(now())
+
+  @@map("vouchers")
+}
+
+model Claim {
+  id Int @id @default(autoincrement())
+  user_id Int
+  voucher_id Int
+  claimed_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+  voucher Voucher @relation(fields: [voucher_id], references: [id])
+
+  @@unique([user_id, voucher_id])
+
+  @@map("claims")
+}
