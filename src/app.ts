@@ -5,12 +5,17 @@ import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import path from "path";
 
+import authRoute from "./modules/auth/auth.router";
+
 const app = express();
 
 // global middlewares
 app.use(cors());
 app.use(helmet());
 app.use(express.json());
+
+// daftarkan router
+app.use("/auth/", authRoute);
 
 // Swagger docs setup
 const swaggerDoc = YAML.load(path.join(__dirname, "../docs/openAPI.yaml"));
