@@ -14,13 +14,21 @@ datasource db {
   url      = env("DIRECT_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id Int @id @default(autoincrement())
   email String @unique
   password String
   name String
+  role Role @default(USER)
   claims Claim[]
   created_at DateTime @default(now())
+
+  created_vouchers Voucher[] @relation("AdminVouchers")
 
   @@map("users")
 }
@@ -36,6 +44,9 @@ model Voucher {
   valid_until DateTime
   claims Claim[]
 
+  created_by_id Int
+  created_by User @relation("AdminVouchers",fields: [created_by_id], references: [id])
+  
   created_at DateTime @default(now())
 
   @@map("vouchers")

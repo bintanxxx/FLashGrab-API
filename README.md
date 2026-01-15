@@ -1,26 +1,49 @@
 # ⚡ FlashGrab API
 
-Backend system engineered to handle **High Concurrency Flash Sale** events using TypeScript and Prisma Transactions.
+Backend system engineered to handle **High Concurrency Flash Sale** events. Built to demonstrate handling **Race Conditions**, **Database Locking**, and **ACID Transactions**.
 
 ## 🛠 Tech Stack
+
 - **Runtime:** Node.js & Express
 - **Language:** TypeScript
 - **Database:** PostgreSQL (Supabase/Neon)
 - **ORM:** Prisma
 - **Validation:** Zod
-- **Docs:** Swagger UI
+- **Auth:** JWT (JSON Web Token) & Bcrypt
 
-## 🚀 Features
-- **Race Condition Handling:** Prevents overselling using Database Locking.
-- **Transactional Integrity:** ACID compliance for claim process.
-- **RESTful API:** Modular structure.
+## 🚀 Current Features (Sprint 1)
+
+- **Authentication:**
+  - Register (Auto role: USER)
+  - Login (Returns JWT with Role payload)
+  - Secure Password Hashing
+- **Voucher Management (Admin Only):**
+  - Create Voucher with validation (Uniqueness, Date Logic, Stock)
+  - Audit Trail (Tracks which Admin created the voucher)
+- **Security:**
+  - Role-Based Access Control (RBAC) middleware.
+  - Type-safe Request handling (No `any`).
 
 ## 📦 How to Run
-1. Clone repository
-2. `npm install`
-3. Setup `.env` (Database URL)
-4. `npx prisma db push`
-5. `npm run dev`
 
-## 📖 API Documentation
-Visit `http://localhost:3000/api-docs` after running the server.
+1. **Clone Repository**
+   ```bash
+   git clone [https://github.com/USERNAME/flashgrab-api.git](https://github.com/USERNAME/flashgrab-api.git)
+   cd flashgrab-api
+   ```
+
+## 🔌 API Endpoints
+
+Base URL: `http://localhost:3000/api/v1`
+
+| Method       | Endpoint         | Description                    | Access            |
+| :----------- | :--------------- | :----------------------------- | :---------------- |
+| **AUTH**     |                  |                                |                   |
+| `POST`       | `/auth/register` | Register new user              | Public            |
+| `POST`       | `/auth/login`    | Login user & get Token         | Public            |
+| **VOUCHERS** |                  |                                |                   |
+| `GET`        | `/vouchers`      | Get list of available vouchers | Public            |
+| `POST`       | `/vouchers`      | Create new voucher (Seeding)   | **Admin Only** 🔐 |
+
+> **Note:** For endpoints with **🔐**, you must include the `Authorization` header:
+> `Bearer <your_jwt_token>`
