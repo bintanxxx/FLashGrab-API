@@ -4,11 +4,124 @@ info:
   description: API System for High Concurrency Flash Sale
   version: 1.0.0
 servers:
-  - url: http://localhost:3000
+  - url: http://localhost:3000/api/v1
+    description: Local Server
+
+# 1. Definisi Security (Tombol Gembok)
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+# 2. Daftar Endpoint
 paths:
-  /:
-    get:
-      summary: Health Check
+  # --- AUTHENTICATION ---
+  /auth/register:
+    post:
+      summary: Register new user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+      responses:
+        "201":
+          description: User created successfully
+        "400":
+          description: Validation error
+
+  /auth/login:
+    post:
+      summary: Login user
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
       responses:
         "200":
-          description: Server is running
+          description: Login success (Returns Token)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+        "401":
+          description: Invalid credentials
+
+  # --- VOUCHERS ---
+  /vouchers:
+    get:
+      summary: Get list of vouchers
+      tags: [Vouchers]
+      responses:
+        "200":
+          description: List of vouchers
+
+    post:
+      summary: Create new voucher (Admin Only)
+      tags: [Vouchers]
+      security:
+        - bearerAuth: [] # <-- Butuh Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code, name, stock, validUntil]
+              properties:
+                code:
+                  type: string
+                  example: "SALE_1212"
+                name:
+                  type: string
+                  example: "Diskon Akhir Tahun"
+                stock:
+                  type: integer
+                  example: 100
+                validFrom:
+                  type: string
+                  format: date-time
+                  example: "2026-01-01T00:00:00Z"
+                validUntil:
+                  type: string
+                  format: date-time
+                  example: "2026-01-02T00:00:00Z"
+      responses:
+        "201":
+          description: Voucher created
+        "400":
+          description: Validation error (Duplicate code / Invalid date)
+        "401":
+          description: Unauthorized (No Token)
+        "403":
+          description: Forbidden (Not Admin)

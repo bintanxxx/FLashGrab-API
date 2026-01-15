@@ -19,6 +19,7 @@ export const register = async (data: RegisterDTO) => {
       name: data.name,
       email: data.email,
       password: hashedPassword,
+      role: "USER",
     },
     select: {
       id: true,
@@ -41,6 +42,7 @@ export const login = async (data: LoginDTO) => {
     {
       id: user.id,
       email: user.email,
+      role: user.role,
     },
     SECRET_KEY,
     { expiresIn: "1d" }
